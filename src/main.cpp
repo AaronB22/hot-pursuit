@@ -6,6 +6,7 @@
 #include <bn_string.h>
 #include <bn_sprite_ptr.h>
 #include <bn_sprite_text_generator.h>
+#include <bn_math.h>
 
 #include "common_fixed_8x16_font.h"
 #include "bn_sprite_items_dot.h"
@@ -166,12 +167,18 @@ public:
     {
         bn::fixed player_x = player.sprite.x();
         bn::fixed player_y = player.sprite.y();
-
+        bn::fixed enemy_x = sprite.x();
+        bn::fixed enemy_y = sprite.y();
         // Get direction to player from enemy
-
+        bn::fixed vectX = player_x - enemy_x;
+        bn::fixed vectY = player_y - enemy_y;
         // Turn that direction into a "unit" vector. (magnitude of 1)
-
+        bn::fixed magnitude = bn::sqrt((vectX * vectX) + (vectY * vectY));
+        vectX /= magnitude;
+        vectY /= magnitude;
         // Move the enemy along that vector at a magnitude of speed.
+        sprite.set_x(enemy_x + vectX * speed);
+        sprite.set_y(enemy_y + vectY * speed);
     }
 
     // Create the sprite. This will be moved to a constructor
@@ -199,6 +206,7 @@ int main()
     while (true)
     {
         player.update();
+        enemy.update(player);
 
         // Reset the current score and player position if the player collides with enemy
         if (enemy.bounding_box.intersects(player.bounding_box))
