@@ -129,6 +129,9 @@ class Player {
         bn::size size; // The width and height of the sprite
         bn::rect bounding_box; // The rectangle around the sprite for checking collision
 };
+class Enemy{
+
+};
 
 int main() {
     bn::core::init();
