@@ -1,6 +1,8 @@
 #include <bn_core.h>
 #include <bn_display.h>
 #include <bn_keypad.h>
+#include <bn_rect.h>
+#include <bn_size.h>
 #include <bn_string.h>
 #include <bn_sprite_ptr.h>
 #include <bn_sprite_text_generator.h>
@@ -25,6 +27,18 @@ static constexpr int SCORE_Y = -70;
 // High score location
 static constexpr int HIGH_SCORE_X = -70;
 static constexpr int HIGH_SCORE_Y = -70;
+
+/**
+ * Creates a rectangle centered at a sprite's location with a given size.
+ * sprite the sprite to center the box around
+ * box_size the dimensions of the bounding box
+ */
+bn::rect create_bounding_box(bn::sprite_ptr sprite, bn::size box_size) {
+    return bn::rect(sprite.x().round_integer(),
+                    sprite.y().round_integer(),
+                    box_size.width(),
+                    box_size.height)();
+}
 
 /**
  * Displays a score and high score.
