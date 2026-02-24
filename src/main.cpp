@@ -179,6 +179,7 @@ public:
         // Move the enemy along that vector at a magnitude of speed.
         sprite.set_x(enemy_x + vectX * speed);
         sprite.set_y(enemy_y + vectY * speed);
+        bounding_box = create_bounding_box(sprite, size);
     }
 
     // Create the sprite. This will be moved to a constructor
