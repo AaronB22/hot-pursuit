@@ -162,6 +162,18 @@ public:
         return bounding_box.intersects(player.bounding_box);
     }
 
+    void update(Player &player)
+    {
+        bn::fixed player_x = player.sprite.x();
+        bn::fixed player_y = player.sprite.y();
+
+        // Get direction to player from enemy
+
+        // Turn that direction into a "unit" vector. (magnitude of 1)
+
+        // Move the enemy along that vector at a magnitude of speed.
+    }
+
     // Create the sprite. This will be moved to a constructor
     bn::sprite_ptr sprite;
     bn::fixed speed;       // The speed of the player
