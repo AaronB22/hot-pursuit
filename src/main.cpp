@@ -114,10 +114,10 @@ class Enemy
     {
     }
 
-    bool isTouching(Player &player)
-    {
-        return bounding_box.intersects(player.bounding_box);
-    }
+    // bool isTouching(Player &player)
+    // {
+    //     return bounding_box.intersects(player.bounding_box);
+    // }
 
     // Create the sprite. This will be moved to a constructor
     bn::sprite_ptr sprite;
@@ -188,12 +188,12 @@ int main()
         player.update();
 
         // Reset the current score and player position if the player collides with enemy
-        // if (enemy_bounding_box.intersects(player.bounding_box))
-        // {
-        //     scoreDisplay.resetScore();
-        //     player.sprite.set_x(44);
-        //     player.sprite.set_y(22);
-        // }
+        if (enemy.bounding_box.intersects(player.bounding_box))
+        {
+            scoreDisplay.resetScore();
+            player.sprite.set_x(44);
+            player.sprite.set_y(22);
+        }
 
         // Update the scores and disaply them
         scoreDisplay.update();
