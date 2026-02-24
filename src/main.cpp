@@ -113,6 +113,11 @@ class Enemy
     {
     }
 
+    bool isTouching(Player &player)
+    {
+        return bounding_box.intersects(player.bounding_box);
+    }
+
     // Create the sprite. This will be moved to a constructor
     bn::sprite_ptr sprite;
     bn::fixed speed;       // The speed of the player
