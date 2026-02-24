@@ -105,7 +105,19 @@ public:
 };
 class Enemy
 {
-    Enemy()
+    Enemy(int starting_x, int starting_y, bn::fixed enemy_speed, bn::size enemy_size)
+        : sprite(bn::sprite_items::dot.create_sprite(starting_x, starting_y)),
+          speed(enemy_speed),
+          size(enemy_size),
+          bounding_box(create_bounding_box(sprite, size))
+    {
+    }
+
+    // Create the sprite. This will be moved to a constructor
+    bn::sprite_ptr sprite;
+    bn::fixed speed;       // The speed of the player
+    bn::size size;         // The width and height of the sprite
+    bn::rect bounding_box; // The rectangle around the sprite for checking collision
 };
 
 class Player
