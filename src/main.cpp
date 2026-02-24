@@ -103,28 +103,6 @@ public:
     bn::vector<bn::sprite_ptr, MAX_SCORE_CHARS> score_sprites; // Sprites to display scores
     bn::sprite_text_generator text_generator;                  // Text generator for scores
 };
-class Enemy
-{
-    public:
-        Enemy(int starting_x, int starting_y, bn::fixed enemy_speed, bn::size enemy_size)
-            : sprite(bn::sprite_items::square.create_sprite(starting_x, starting_y)),
-            speed(enemy_speed),
-            size(enemy_size),
-            bounding_box(create_bounding_box(sprite, size))
-    {
-    }
-
-    // bool isTouching(Player &player)
-    // {
-    //     return bounding_box.intersects(player.bounding_box);
-    // }
-
-    // Create the sprite. This will be moved to a constructor
-    bn::sprite_ptr sprite;
-    bn::fixed speed;       // The speed of the player
-    bn::size size;         // The width and height of the sprite
-    bn::rect bounding_box; // The rectangle around the sprite for checking collision
-};
 
 class Player
 {
@@ -168,6 +146,29 @@ public:
     bn::rect bounding_box; // The rectangle around the sprite for checking collision
 };
 
+class Enemy
+{
+public:
+    Enemy(int starting_x, int starting_y, bn::fixed enemy_speed, bn::size enemy_size)
+        : sprite(bn::sprite_items::square.create_sprite(starting_x, starting_y)),
+          speed(enemy_speed),
+          size(enemy_size),
+          bounding_box(create_bounding_box(sprite, size))
+    {
+    }
+
+    bool isTouching(Player &player)
+    {
+        return bounding_box.intersects(player.bounding_box);
+    }
+
+    // Create the sprite. This will be moved to a constructor
+    bn::sprite_ptr sprite;
+    bn::fixed speed;       // The speed of the player
+    bn::size size;         // The width and height of the sprite
+    bn::rect bounding_box; // The rectangle around the sprite for checking collision
+};
+
 int main()
 {
     bn::core::init();
@@ -181,7 +182,7 @@ int main()
 
     // bn::sprite_ptr enemy_sprite = bn::sprite_items::square.create_sprite(-30, 22);
     // bn::rect enemy_bounding_box = create_bounding_box(enemy_sprite, ENEMY_SIZE);
-    Enemy enemy= Enemy(-20,30, 1.0, ENEMY_SIZE);
+    Enemy enemy = Enemy(-20, 30, 1.0, ENEMY_SIZE);
 
     while (true)
     {
