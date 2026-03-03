@@ -119,3 +119,11 @@ Make the game your own in some way! A few ideas:
 ## Submitting
  See Canvas for instructions on how to submit
 
+    - Keep the README short, but informative and exciting. You want someone to see it and quickly have an idea of what your game is and be able to find the link to play it.
+    - Add/commit/push!
+1. Make a Pull Request (PR) to the original repository. 
+
+
+## Submitting
+ See Canvas for instructions on how to submit
+
