@@ -206,9 +206,16 @@ int main()
     Enemy starting_enemy = Enemy(-20, 30, 1.0, ENEMY_SIZE);
     bn::vector<Enemy, MAXENEMIES> enemies ={};
     enemies.push_back(starting_enemy);
+    int framecounter=0;
 
     while (true)
     {
+        if(framecounter<60){
+            framecounter++;
+        }
+        else{
+            framecounter=0;
+        }
         player.update();
         
         // Reset the current score and player position if the player collides with enemy
@@ -221,6 +228,12 @@ int main()
                 player.sprite.set_y(22);
             }
 
+        }
+        if(enemies.size()<MAXENEMIES){
+            if(framecounter%10==0){
+                Enemy new_enemy = Enemy(-20, 30, 1.0, ENEMY_SIZE);
+                enemies.push_back(new_enemy);
+            }
         }
 
         // Update the scores and disaply them
