@@ -6,12 +6,11 @@
 #include <bn_string.h>
 #include <bn_sprite_ptr.h>
 #include <bn_sprite_text_generator.h>
-#include <bn_random.h>
 #include <bn_math.h>
 
 #include "common_fixed_8x16_font.h"
-#include "bn_sprite_items_dot.h"
-#include "bn_sprite_items_square.h"
+#include "bn_sprite_items_car.h"
+#include "bn_sprite_items_cop.h"
 
 // Width and height of the the player bounding box
 static constexpr bn::size PLAYER_SIZE = {8, 8};
@@ -24,7 +23,7 @@ static constexpr int MAX_X = bn::display::width() / 2;
 
 // Number of characters required to show two of the longest numer possible in an int (-2147483647)
 static constexpr int MAX_SCORE_CHARS = 22;
-static constexpr int MAXENEMIES = 10;
+static constexpr int MAXENEMIES=10;
 
 // Score location
 static constexpr int SCORE_X = 70;
@@ -111,7 +110,7 @@ class Player
 {
 public:
     Player(int starting_x, int starting_y, bn::fixed player_speed, bn::size player_size)
-        : sprite(bn::sprite_items::dot.create_sprite(starting_x, starting_y)),
+        : sprite(bn::sprite_items::car.create_sprite(starting_x, starting_y)),
           speed(player_speed),
           size(player_size),
           bounding_box(create_bounding_box(sprite, size))
@@ -130,6 +129,7 @@ public:
         {
             sprite.set_x(sprite.x() - speed);
         }
+        // TODO: Add logic for up and down
         if (bn::keypad::up_held())
         {
             sprite.set_y(sprite.y() - speed);
@@ -138,24 +138,6 @@ public:
         {
             sprite.set_y(sprite.y() + speed);
         }
-        // Screen Limits
-        if (sprite.x() > MAX_X)
-        {
-            sprite.set_x(MAX_X);
-        }
-        if (sprite.x() < MIN_X)
-        {
-            sprite.set_x(MIN_X);
-        }
-        if (sprite.y() > MAX_Y)
-        {
-            sprite.set_y(MAX_Y);
-        }
-        if (sprite.y() < MIN_Y)
-        {
-            sprite.set_y(MIN_Y);
-        }
-
         bounding_box = create_bounding_box(sprite, size);
     }
 
@@ -170,7 +152,7 @@ class Enemy
 {
 public:
     Enemy(int starting_x, int starting_y, bn::fixed enemy_speed, bn::size enemy_size)
-        : sprite(bn::sprite_items::square.create_sprite(starting_x, starting_y)),
+        : sprite(bn::sprite_items::cop.create_sprite(starting_x, starting_y)),
           speed(enemy_speed),
           size(enemy_size),
           bounding_box(create_bounding_box(sprite, size))
@@ -193,16 +175,8 @@ public:
         bn::fixed vectY = player_y - enemy_y;
         // Turn that direction into a "unit" vector. (magnitude of 1)
         bn::fixed magnitude = bn::sqrt((vectX * vectX) + (vectY * vectY));
-        if (magnitude == 0)
-        {
-            vectX = 0;
-            vectY = 0;
-        }
-        else
-        {
-            vectX /= magnitude;
-            vectY /= magnitude;
-        }
+        vectX /= magnitude;
+        vectY /= magnitude;
         // Move the enemy along that vector at a magnitude of speed.
         sprite.set_x(enemy_x + vectX * speed);
         sprite.set_y(enemy_y + vectY * speed);
@@ -219,8 +193,6 @@ public:
 int main()
 {
     bn::core::init();
-    // Create Random Number Generator
-    bn::random rng = bn::random();
 
     // Create a new score display
     ScoreDisplay scoreDisplay = ScoreDisplay();
@@ -232,7 +204,7 @@ int main()
     // bn::sprite_ptr enemy_sprite = bn::sprite_items::square.create_sprite(-30, 22);
     // bn::rect enemy_bounding_box = create_bounding_box(enemy_sprite, ENEMY_SIZE);
     Enemy starting_enemy = Enemy(-20, 30, 1.0, ENEMY_SIZE);
-    bn::vector<Enemy, MAXENEMIES> enemies = {};
+    bn::vector<Enemy, MAXENEMIES> enemies ={};
     enemies.push_back(starting_enemy);
     int framecounter=0;
 
@@ -245,21 +217,17 @@ int main()
             framecounter=0;
         }
         player.update();
-
+        
         // Reset the current score and player position if the player collides with enemy
-        for (Enemy &enemy : enemies)
-        {
+        for (Enemy& enemy: enemies){
             enemy.update(player);
             if (enemy.isTouching(player))
             {
                 scoreDisplay.resetScore();
-                // Reset player position
                 player.sprite.set_x(44);
                 player.sprite.set_y(22);
-                // Set random enemy position
-                enemy.sprite.set_x(rng.get_int(MIN_X, MAX_X));
-                enemy.sprite.set_y(rng.get_int(MIN_Y, MAX_Y));
             }
+
         }
         if(enemies.size()<MAXENEMIES){
             if(framecounter%100==0){
@@ -268,10 +236,7 @@ int main()
             }
         }
 
-        // Update random number generator
-        rng.update();
-
-        // Update the scores and display them
+        // Update the scores and disaply them
         scoreDisplay.update();
 
         bn::core::update();
