@@ -6,6 +6,7 @@
 #include <bn_string.h>
 #include <bn_sprite_ptr.h>
 #include <bn_sprite_text_generator.h>
+#include <bn_random.h>
 #include <bn_math.h>
 
 #include "common_fixed_8x16_font.h"
@@ -23,7 +24,7 @@ static constexpr int MAX_X = bn::display::width() / 2;
 
 // Number of characters required to show two of the longest numer possible in an int (-2147483647)
 static constexpr int MAX_SCORE_CHARS = 22;
-static constexpr int MAXENEMIES=10;
+static constexpr int MAXENEMIES = 10;
 
 // Score location
 static constexpr int SCORE_X = 70;
@@ -218,6 +219,8 @@ public:
 int main()
 {
     bn::core::init();
+    // Create Random Number Generator
+    bn::random rng = bn::random();
 
     // Create a new score display
     ScoreDisplay scoreDisplay = ScoreDisplay();
@@ -229,26 +232,33 @@ int main()
     // bn::sprite_ptr enemy_sprite = bn::sprite_items::square.create_sprite(-30, 22);
     // bn::rect enemy_bounding_box = create_bounding_box(enemy_sprite, ENEMY_SIZE);
     Enemy starting_enemy = Enemy(-20, 30, 1.0, ENEMY_SIZE);
-    bn::vector<Enemy, MAXENEMIES> enemies ={};
+    bn::vector<Enemy, MAXENEMIES> enemies = {};
     enemies.push_back(starting_enemy);
 
     while (true)
     {
         player.update();
-        
+
         // Reset the current score and player position if the player collides with enemy
-        for (Enemy& enemy: enemies){
+        for (Enemy &enemy : enemies)
+        {
             enemy.update(player);
             if (enemy.isTouching(player))
             {
                 scoreDisplay.resetScore();
+                // Reset player position
                 player.sprite.set_x(44);
                 player.sprite.set_y(22);
+                // Set random enemy position
+                enemy.sprite.set_x(rng.get_int(MIN_X, MAX_X));
+                enemy.sprite.set_y(rng.get_int(MIN_Y, MAX_Y));
             }
-
         }
 
-        // Update the scores and disaply them
+        // Update random number generator
+        rng.update();
+
+        // Update the scores and display them
         scoreDisplay.update();
 
         bn::core::update();
