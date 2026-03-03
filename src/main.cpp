@@ -6,12 +6,12 @@
 #include <bn_string.h>
 #include <bn_sprite_ptr.h>
 #include <bn_sprite_text_generator.h>
-#include <bn_random.h>
 #include <bn_math.h>
+#include <bn_random.h>
 
 #include "common_fixed_8x16_font.h"
-#include "bn_sprite_items_dot.h"
-#include "bn_sprite_items_square.h"
+#include "bn_sprite_items_car.h"
+#include "bn_sprite_items_cop.h"
 
 #include "Player.h"
 
@@ -113,7 +113,7 @@ class Enemy
 {
 public:
     Enemy(int starting_x, int starting_y, bn::fixed enemy_speed, bn::size enemy_size)
-        : sprite(bn::sprite_items::square.create_sprite(starting_x, starting_y)),
+        : sprite(bn::sprite_items::cop.create_sprite(starting_x, starting_y)),
           speed(enemy_speed),
           size(enemy_size),
           bounding_box(create_bounding_box(sprite, size))
@@ -136,16 +136,8 @@ public:
         bn::fixed vectY = player_y - enemy_y;
         // Turn that direction into a "unit" vector. (magnitude of 1)
         bn::fixed magnitude = bn::sqrt((vectX * vectX) + (vectY * vectY));
-        if (magnitude == 0)
-        {
-            vectX = 0;
-            vectY = 0;
-        }
-        else
-        {
-            vectX /= magnitude;
-            vectY /= magnitude;
-        }
+        vectX /= magnitude;
+        vectY /= magnitude;
         // Move the enemy along that vector at a magnitude of speed.
         sprite.set_x(enemy_x + vectX * speed);
         sprite.set_y(enemy_y + vectY * speed);
@@ -214,11 +206,10 @@ int main()
                 enemies.push_back(new_enemy);
             }
         }
-
         // Update random number generator
         rng.update();
 
-        // Update the scores and display them
+        // Update the scores and disaply them
         scoreDisplay.update();
 
         bn::core::update();
