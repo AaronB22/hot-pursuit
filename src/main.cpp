@@ -15,6 +15,7 @@
 #include "bn_sprite_items_dot.h"
 
 #include "Player.h"
+#include "Enemy.h"
 
 // Width and height of the the player bounding box
 static constexpr bn::size PLAYER_SIZE = {8, 8};
@@ -42,13 +43,6 @@ static constexpr int HIGH_SCORE_Y = -70;
  * sprite the sprite to center the box around
  * box_size the dimensions of the bounding box
  */
-bn::rect create_bounding_box(bn::sprite_ptr sprite, bn::size box_size)
-{
-    return bn::rect(sprite.x().round_integer(),
-                    sprite.y().round_integer(),
-                    box_size.width(),
-                    box_size.height());
-}
 
 /**
  * Displays a score and high score.
@@ -110,48 +104,6 @@ public:
     bn::sprite_text_generator text_generator;                  // Text generator for scores
 };
 
-class Enemy
-{
-public:
-    Enemy(int starting_x, int starting_y, bn::fixed enemy_speed, bn::size enemy_size)
-        : sprite(bn::sprite_items::cop.create_sprite(starting_x, starting_y)),
-          speed(enemy_speed),
-          size(enemy_size),
-          bounding_box(create_bounding_box(sprite, size))
-    {
-    }
-
-    bool isTouching(Player &player)
-    {
-        return bounding_box.intersects(player.bounding_box());
-    }
-
-    void update(Player &player)
-    {
-        bn::fixed player_x = player.sprite().x();
-        bn::fixed player_y = player.sprite().y();
-        bn::fixed enemy_x = sprite.x();
-        bn::fixed enemy_y = sprite.y();
-        // Get direction to player from enemy
-        bn::fixed vectX = player_x - enemy_x;
-        bn::fixed vectY = player_y - enemy_y;
-        // Turn that direction into a "unit" vector. (magnitude of 1)
-        bn::fixed magnitude = bn::sqrt((vectX * vectX) + (vectY * vectY));
-        vectX /= magnitude;
-        vectY /= magnitude;
-        // Move the enemy along that vector at a magnitude of speed.
-        sprite.set_x(enemy_x + vectX * speed);
-        sprite.set_y(enemy_y + vectY * speed);
-        bounding_box = create_bounding_box(sprite, size);
-    }
-
-    // Create the sprite. This will be moved to a constructor
-    bn::sprite_ptr sprite;
-    bn::fixed speed;       // The speed of the player
-    bn::size size;         // The width and height of the sprite
-    bn::rect bounding_box; // The rectangle around the sprite for checking collision
-};
-
 int main()
 {
     bn::core::init();
@@ -196,8 +148,8 @@ int main()
                 player.sprite().set_x(44);
                 player.sprite().set_y(22);
                 // Set random enemy position
-                enemy.sprite.set_x(rng.get_int(MIN_X, MAX_X));
-                enemy.sprite.set_y(rng.get_int(MIN_Y, MAX_Y));
+                enemy.sprite().set_x(rng.get_int(MIN_X, MAX_X));
+                enemy.sprite().set_y(rng.get_int(MIN_Y, MAX_Y));
             }
         }
         if(enemies.size()<MAXENEMIES){

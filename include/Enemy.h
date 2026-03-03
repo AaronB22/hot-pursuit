@@ -1,17 +1,21 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#ifndef ENEMY_H
+#define ENEMY_H
 
-class Player
+#include <bn_fixed.h>
+#include <bn_size.h>
+#include <bn_sprite_ptr.h>
+#include <bn_rect.h>
+
+#include "Player.h"
+class Enemy
 {
 public:
-    Player(int starting_x, int starting_y, bn::fixed player_speed, bn::size player_size);
+    Enemy(int starting_x, int starting_y, bn::fixed enemy_speed, bn::size enemy_size);
 
-    /**
-     * Update the position and bounding box of the player based on d-pad movement.
-     */
-    void update();
-    bn::rect bounding_box();
+    bool isTouching(Player &player);
     bn::sprite_ptr sprite();
+
+    void update(Player &player);
 
 private:
     // Create the sprite. This will be moved to a constructor
