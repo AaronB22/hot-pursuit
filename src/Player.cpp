@@ -1,10 +1,11 @@
 #include <bn_fixed.h>
 #include <bn_size.h>
-#include <bn_sprite_items_dot.h>
 #include <bn_sprite_ptr.h>
 #include <bn_rect.h>
 #include <bn_keypad.h>
 #include <bn_display.h>
+
+#include "bn_sprite_items_car.h"
 
 #include "Player.h"
 
@@ -22,7 +23,7 @@ bn::rect player_create_bounding_box(bn::sprite_ptr sprite, bn::size box_size)
 }
 
 Player::Player(int starting_x, int starting_y, bn::fixed player_speed, bn::size player_size)
-    : _sprite(bn::sprite_items::dot.create_sprite(starting_x, starting_y)),
+    : _sprite(bn::sprite_items::car.create_sprite(starting_x, starting_y)),
       _speed(player_speed),
       _size(player_size),
       _bounding_box(player_create_bounding_box(_sprite, _size))
