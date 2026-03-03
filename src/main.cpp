@@ -7,10 +7,14 @@
 #include <bn_sprite_ptr.h>
 #include <bn_sprite_text_generator.h>
 #include <bn_math.h>
+#include <bn_random.h>
 
 #include "common_fixed_8x16_font.h"
 #include "bn_sprite_items_car.h"
 #include "bn_sprite_items_cop.h"
+#include "bn_sprite_items_dot.h"
+
+#include "Player.h"
 
 // Width and height of the the player bounding box
 static constexpr bn::size PLAYER_SIZE = {8, 8};
@@ -23,7 +27,7 @@ static constexpr int MAX_X = bn::display::width() / 2;
 
 // Number of characters required to show two of the longest numer possible in an int (-2147483647)
 static constexpr int MAX_SCORE_CHARS = 22;
-static constexpr int MAXENEMIES=10;
+static constexpr int MAXENEMIES = 10;
 
 // Score location
 static constexpr int SCORE_X = 70;
@@ -106,48 +110,6 @@ public:
     bn::sprite_text_generator text_generator;                  // Text generator for scores
 };
 
-class Player
-{
-public:
-    Player(int starting_x, int starting_y, bn::fixed player_speed, bn::size player_size)
-        : sprite(bn::sprite_items::car.create_sprite(starting_x, starting_y)),
-          speed(player_speed),
-          size(player_size),
-          bounding_box(create_bounding_box(sprite, size))
-    {
-    }
-    /**
-     * Update the position and bounding box of the player based on d-pad movement.
-     */
-    void update()
-    {
-        if (bn::keypad::right_held())
-        {
-            sprite.set_x(sprite.x() + speed);
-        }
-        if (bn::keypad::left_held())
-        {
-            sprite.set_x(sprite.x() - speed);
-        }
-        // TODO: Add logic for up and down
-        if (bn::keypad::up_held())
-        {
-            sprite.set_y(sprite.y() - speed);
-        }
-        if (bn::keypad::down_held())
-        {
-            sprite.set_y(sprite.y() + speed);
-        }
-        bounding_box = create_bounding_box(sprite, size);
-    }
-
-    // Create the sprite. This will be moved to a constructor
-    bn::sprite_ptr sprite;
-    bn::fixed speed;       // The speed of the player
-    bn::size size;         // The width and height of the sprite
-    bn::rect bounding_box; // The rectangle around the sprite for checking collision
-};
-
 class Enemy
 {
 public:
@@ -161,13 +123,13 @@ public:
 
     bool isTouching(Player &player)
     {
-        return bounding_box.intersects(player.bounding_box);
+        return bounding_box.intersects(player.bounding_box());
     }
 
     void update(Player &player)
     {
-        bn::fixed player_x = player.sprite.x();
-        bn::fixed player_y = player.sprite.y();
+        bn::fixed player_x = player.sprite().x();
+        bn::fixed player_y = player.sprite().y();
         bn::fixed enemy_x = sprite.x();
         bn::fixed enemy_y = sprite.y();
         // Get direction to player from enemy
@@ -193,6 +155,8 @@ public:
 int main()
 {
     bn::core::init();
+    // Create Random Number Generator
+    bn::random rng = bn::random();
 
     // Create a new score display
     ScoreDisplay scoreDisplay = ScoreDisplay();
@@ -201,40 +165,52 @@ int main()
     // TODO: we will move the initialization logic to a constructor.
     Player player = Player(48, 46, 2.4, PLAYER_SIZE);
 
+    bn::sprite_ptr bomb = bn::sprite_items::dot.create_sprite(0, 0);
+
     // bn::sprite_ptr enemy_sprite = bn::sprite_items::square.create_sprite(-30, 22);
     // bn::rect enemy_bounding_box = create_bounding_box(enemy_sprite, ENEMY_SIZE);
     Enemy starting_enemy = Enemy(-20, 30, 1.0, ENEMY_SIZE);
-    bn::vector<Enemy, MAXENEMIES> enemies ={};
+    bn::vector<Enemy, MAXENEMIES> enemies = {};
     enemies.push_back(starting_enemy);
-    int framecounter=0;
+    int framecounter = 0;
 
     while (true)
     {
         if(framecounter<6000){
             framecounter++;
         }
-        else{
-            framecounter=0;
+        else
+        {
+            framecounter = 0;
         }
         player.update();
-        
+
         // Reset the current score and player position if the player collides with enemy
-        for (Enemy& enemy: enemies){
+        for (Enemy &enemy : enemies)
+        {
             enemy.update(player);
             if (enemy.isTouching(player))
             {
                 scoreDisplay.resetScore();
-                player.sprite.set_x(44);
-                player.sprite.set_y(22);
+                // Reset player position
+                player.sprite().set_x(44);
+                player.sprite().set_y(22);
+                // Set random enemy position
+                enemy.sprite.set_x(rng.get_int(MIN_X, MAX_X));
+                enemy.sprite.set_y(rng.get_int(MIN_Y, MAX_Y));
             }
-
         }
         if(enemies.size()<MAXENEMIES){
-            if(framecounter%1000==0){
+            if(framecounter%500==0){
                 Enemy new_enemy = Enemy(-20, 30, 1.0, ENEMY_SIZE);
                 enemies.push_back(new_enemy);
             }
         }
+        if(enemies.size()>1){
+  
+        }
+        // Update random number generator
+        rng.update();
 
         // Update the scores and disaply them
         scoreDisplay.update();
