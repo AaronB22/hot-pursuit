@@ -1,3 +1,6 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
 class Player
 {
 public:
@@ -17,3 +20,5 @@ private:
     bn::size _size;         // The width and height of the sprite
     bn::rect _bounding_box; // The rectangle around the sprite for checking collision
 };
+
+#endif
