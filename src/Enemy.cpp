@@ -29,7 +29,8 @@ bool Enemy::isTouching(Player &player)
     return _bounding_box.intersects(player.bounding_box());
 }
 
-bn::sprite_ptr Enemy::sprite() {
+bn::sprite_ptr Enemy::sprite()
+{
     return _sprite;
 }
 

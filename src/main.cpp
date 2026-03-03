@@ -12,7 +12,6 @@
 #include "common_fixed_8x16_font.h"
 #include "bn_sprite_items_car.h"
 #include "bn_sprite_items_cop.h"
-#include "bn_sprite_items_dot.h"
 
 #include "Player.h"
 #include "Enemy.h"
@@ -117,8 +116,6 @@ int main()
     // TODO: we will move the initialization logic to a constructor.
     Player player = Player(48, 46, 2.4, PLAYER_SIZE);
 
-    bn::sprite_ptr bomb = bn::sprite_items::dot.create_sprite(0, 0);
-
     // bn::sprite_ptr enemy_sprite = bn::sprite_items::square.create_sprite(-30, 22);
     // bn::rect enemy_bounding_box = create_bounding_box(enemy_sprite, ENEMY_SIZE);
     Enemy starting_enemy = Enemy(-20, 30, 1.0, ENEMY_SIZE);
@@ -128,7 +125,8 @@ int main()
 
     while (true)
     {
-        if(framecounter<6000){
+        if (framecounter < 1000)
+        {
             framecounter++;
         }
         else
@@ -148,18 +146,15 @@ int main()
                 player.sprite().set_x(44);
                 player.sprite().set_y(22);
                 // Set random enemy position
-                enemy.sprite().set_x(rng.get_int(MIN_X, MAX_X));
-                enemy.sprite().set_y(rng.get_int(MIN_Y, MAX_Y));
             }
         }
-        if(enemies.size()<MAXENEMIES){
-            if(framecounter%500==0){
-                Enemy new_enemy = Enemy(-20, 30, 1.0, ENEMY_SIZE);
+        if (enemies.size() < MAXENEMIES)
+        {
+            if (framecounter % 500 == 0)
+            {
+                Enemy new_enemy = Enemy(-20, 30, 1 + (enemies.size() / 10), ENEMY_SIZE);
                 enemies.push_back(new_enemy);
             }
-        }
-        if(enemies.size()>1){
-  
         }
         // Update random number generator
         rng.update();
