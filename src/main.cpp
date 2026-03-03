@@ -235,7 +235,7 @@ int main()
 
     while (true)
     {
-        if(framecounter<60){
+        if(framecounter<600){
             framecounter++;
         }
         else{
@@ -255,7 +255,7 @@ int main()
 
         }
         if(enemies.size()<MAXENEMIES){
-            if(framecounter%10==0){
+            if(framecounter%100==0){
                 Enemy new_enemy = Enemy(-20, 30, 1.0, ENEMY_SIZE);
                 enemies.push_back(new_enemy);
             }
