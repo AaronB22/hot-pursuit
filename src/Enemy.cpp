@@ -7,6 +7,7 @@
 
 #include "Player.h"
 #include "Enemy.h"
+#include "Stop.h"
 
 bn::rect enemy_create_bounding_box(bn::sprite_ptr sprite, bn::size box_size)
 {
@@ -28,7 +29,16 @@ bool Enemy::isTouching(Player &player)
 {
     return _bounding_box.intersects(player.bounding_box());
 }
-
+bool Enemy::isTouchingStop(Stop &stop)
+{
+    return _bounding_box.intersects(stop.bounding_box());
+}
+void Enemy::reset(int x, int y)
+{
+    _sprite.set_x(x);
+    _sprite.set_y(y);
+    _bounding_box = enemy_create_bounding_box(_sprite, _size);
+}
 bn::sprite_ptr Enemy::sprite()
 {
     return _sprite;
@@ -45,6 +55,9 @@ void Enemy::update(Player &player)
     bn::fixed vectY = player_y - enemy_y;
     // Turn that direction into a "unit" vector. (magnitude of 1)
     bn::fixed magnitude = bn::sqrt((vectX * vectX) + (vectY * vectY));
+    if(magnitude<1){
+        return;
+    }
     vectX /= magnitude;
     vectY /= magnitude;
     // Move the enemy along that vector at a magnitude of speed.

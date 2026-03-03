@@ -1,29 +1,25 @@
-#ifndef ENEMY_H
-#define ENEMY_H
+#ifndef STOP_H
+#define STOP_H
 
 #include <bn_fixed.h>
 #include <bn_size.h>
 #include <bn_sprite_ptr.h>
 #include <bn_rect.h>
 
-#include "Player.h"
-#include "Stop.h"
-class Enemy
+class Stop
 {
 public:
-    Enemy(int starting_x, int starting_y, bn::fixed enemy_speed, bn::size enemy_size);
 
-    bool isTouching(Player &player);
-    bool isTouchingStop(Stop &stop);
-    void reset(int x, int y);
+    Stop(int starting_x, int starting_y, bn::size stop_size);
+
+    bn::rect bounding_box();
     bn::sprite_ptr sprite();
 
-    void update(Player &player);
+    void update(Stop &stop);
 
 private:
     // Create the sprite. This will be moved to a constructor
     bn::sprite_ptr _sprite;
-    bn::fixed _speed;       // The speed of the player
     bn::size _size;         // The width and height of the sprite
     bn::rect _bounding_box; // The rectangle around the sprite for checking collision
 };

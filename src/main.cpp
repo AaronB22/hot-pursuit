@@ -16,6 +16,7 @@
 #include "ScoreDisplay.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "Stop.h"
 
 // Width and height of the the player bounding box
 static constexpr bn::size PLAYER_SIZE = {8, 8};
@@ -49,6 +50,7 @@ int main()
     // Create a player and initialize it
     // TODO: we will move the initialization logic to a constructor.
     Player player = Player(48, 46, 2.4, PLAYER_SIZE);
+    Stop enemyStop = Stop(10, 12, PLAYER_SIZE);
 
     // bn::sprite_ptr enemy_sprite = bn::sprite_items::square.create_sprite(-30, 22);
     // bn::rect enemy_bounding_box = create_bounding_box(enemy_sprite, ENEMY_SIZE);
@@ -69,17 +71,39 @@ int main()
         }
         player.update();
 
-        // Reset the current score and player position if the player collides with enemy
-        for (Enemy &enemy : enemies)
+        for (int i = enemies.size() - 1; i >= 0; --i)
         {
-            enemy.update(player);
-            if (enemy.isTouching(player))
+            enemies[i].update(player);
+
+            if (enemies[i].isTouchingStop(enemyStop))
+            {
+                if (i != 0)
+                {
+                    enemies.erase(enemies.begin() + i);
+                    continue;
+                }
+                if (i == 0)
+                {
+
+                    enemies[0].reset(-20, 30);
+                }
+            }
+
+            if (enemies[i].isTouching(player))
             {
                 scoreDisplay.resetScore();
-                // Reset player position
+                if (i != 0)
+                {
+                    enemies.erase(enemies.begin() + i);
+                    continue;
+                }
+                if (i == 0)
+                {
+
+                    enemies[0].reset(-20, 30);
+                }
                 player.sprite().set_x(44);
                 player.sprite().set_y(22);
-                // Set random enemy position
             }
         }
         if (enemies.size() < MAXENEMIES)
