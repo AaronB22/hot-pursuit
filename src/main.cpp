@@ -128,7 +128,6 @@ public:
         {
             sprite.set_x(sprite.x() - speed);
         }
-        // TODO: Add logic for up and down
         if (bn::keypad::up_held())
         {
             sprite.set_y(sprite.y() - speed);
@@ -137,6 +136,24 @@ public:
         {
             sprite.set_y(sprite.y() + speed);
         }
+        // Screen Limits
+        if (sprite.x() > MAX_X)
+        {
+            sprite.set_x(MAX_X);
+        }
+        if (sprite.x() < MIN_X)
+        {
+            sprite.set_x(MIN_X);
+        }
+        if (sprite.y() > MAX_Y)
+        {
+            sprite.set_y(MAX_Y);
+        }
+        if (sprite.y() < MIN_Y)
+        {
+            sprite.set_y(MIN_Y);
+        }
+
         bounding_box = create_bounding_box(sprite, size);
     }
 
@@ -174,8 +191,16 @@ public:
         bn::fixed vectY = player_y - enemy_y;
         // Turn that direction into a "unit" vector. (magnitude of 1)
         bn::fixed magnitude = bn::sqrt((vectX * vectX) + (vectY * vectY));
-        vectX /= magnitude;
-        vectY /= magnitude;
+        if (magnitude == 0)
+        {
+            vectX = 0;
+            vectY = 0;
+        }
+        else
+        {
+            vectX /= magnitude;
+            vectY /= magnitude;
+        }
         // Move the enemy along that vector at a magnitude of speed.
         sprite.set_x(enemy_x + vectX * speed);
         sprite.set_y(enemy_y + vectY * speed);
